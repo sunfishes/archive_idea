@@ -1,7 +1,7 @@
 import 'package:archive_idea/data/idea_info.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
+//SQFLITE를 사용하여 앱 내에서 데이터베이스 만들기
 class DatabaseHelper {
   late Database database;
 
