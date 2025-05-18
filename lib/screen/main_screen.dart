@@ -1,5 +1,9 @@
+import 'package:archive_idea/data/idea_info.dart';
+import 'package:archive_idea/database/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -9,6 +13,20 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  var dbHelper = DatabaseHelper(); //데이터베이스 접근을 용이하게 해주는 유틸 객체
+  List<IdeaInfo> lstIdeaInfo = []; //아이디어 목록들
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //아이디어 목록들 가져오기
+    getIdeaInfo();
+
+    //임시
+    //setInserIdeaInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +45,7 @@ class _MainScreenState extends State<MainScreen> {
       body: Container(
         margin: EdgeInsets.all(16),
         child: ListView.builder(
-          itemCount: 10,
+          itemCount: lstIdeaInfo.length,
           itemBuilder: (context, index) {
             return listItem(index);
           },
@@ -60,15 +78,14 @@ class _MainScreenState extends State<MainScreen> {
           //아이디어 제목
           Container(
             margin: EdgeInsets.only(left: 16, bottom: 16),
-            child: Text('# 공공데이터 활용 공모전 아이디어', style: TextStyle(fontSize: 16)),
+            child: Text(lstIdeaInfo[index].title, style: TextStyle(fontSize: 16)),
           ),
           //일시
           Align(
             alignment: Alignment.bottomRight,
             child: Container(
               margin: EdgeInsets.only(right: 16, bottom: 8),
-              child: Text(
-                '2025.05.17 23:22',
+              child: Text(DateFormat("yyyy.MM.dd HH:mm").format(DateTime.fromMillisecondsSinceEpoch(lstIdeaInfo[index].createdAt)),
                 style: TextStyle(color: Color(0xffaeaeae), fontSize: 10),
               ),
             ),
@@ -79,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Container(
               margin: EdgeInsets.only(left: 16, bottom: 8),
               child: RatingBar.builder(
-              initialRating: 3,
+              initialRating: lstIdeaInfo[index].priority.toDouble(),
               minRating: 1,
               direction: Axis.horizontal,
               itemCount: 5,
@@ -97,5 +114,21 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> getIdeaInfo() async {
+    //아이디어 목록 조회 (select)
+    await dbHelper.initDatabase();
+    //idea  정보들을 가지고와서 멤버(전역)변수 리스트객체에 담기
+    lstIdeaInfo = await dbHelper.getAllIdeaInfo();
+    //리스트 객체 역순으로 정렬
+    lstIdeaInfo.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    setState(() {});
+  }
+
+  Future<void> setInserIdeaInfo() async {
+    //삽입 메서드
+    await dbHelper.initDatabase();
+    await dbHelper.insertIdeaInfo(IdeaInfo(title: '# 공모전 아이디어', motive: '# 링커리어에서 찾게됨', content: '# 자세한 내용 입니다..', priority: 5, feedback: '# 피드백 사항입니다.', createdAt: DateTime.now().millisecondsSinceEpoch,));
   }
 }
