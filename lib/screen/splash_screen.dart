@@ -10,7 +10,7 @@ class SplashScreen extends StatelessWidget {
       },);
 
     return Scaffold(
-      backgroundColor: Color(0xFF16212C), //배경색 추가
+      backgroundColor: Colors.white, //배경색 추가
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,//주축정렬
