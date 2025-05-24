@@ -126,7 +126,7 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {});
   }
 
-  Future<void> setInserIdeaInfo() async {
+  Future<void> setInsertIdeaInfo() async {
     //삽입 메서드
     await dbHelper.initDatabase();
     await dbHelper.insertIdeaInfo(IdeaInfo(title: '# 공모전 아이디어', motive: '# 링커리어에서 찾게됨', content: '# 자세한 내용 입니다..', priority: 5, feedback: '# 피드백 사항입니다.', createdAt: DateTime.now().millisecondsSinceEpoch,));

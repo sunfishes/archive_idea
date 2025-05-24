@@ -1,4 +1,5 @@
 import 'package:archive_idea/data/idea_info.dart';
+import 'package:archive_idea/database/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -29,6 +30,9 @@ final TextEditingController _feedbackController = TextEditingController();
 
 //아이디어 선택된 현재 중요도 점수
   int priorityPoint = 3;
+
+  //database helper
+  final dbHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +320,7 @@ final TextEditingController _feedbackController = TextEditingController();
                 ),
               ),
             ),
-              onTap: () {
+              onTap: () async {
                 //아이디어 작성(database insert 처리)
                 String titlevalue = _titleController.text.toString();
                 String motivevalue = _motiveController.text.toString();
@@ -333,7 +337,16 @@ final TextEditingController _feedbackController = TextEditingController();
                   return;
                 }
 
-                //data save
+                if(widget.ideaInfo == null){
+                  //아이디어 정보 클래스 인스턴스 생성 후 db삽입
+                  var ideaInfo = IdeaInfo(title: titlevalue, motive: motivevalue, content: contentvalue, priority: priorityPoint, feedback: feedbackvalue.isNotEmpty ? feedbackvalue : '', createdAt: DateTime.now().millisecondsSinceEpoch,);
+
+                  await setInsertIdeaInfo(ideaInfo);
+                  if (mounted) {
+                    //모든 시나리오가 완성되었으니 이전화면으로 이동
+                    Navigator.pop(context);
+                  }
+                }
 
               },
             ),
@@ -344,6 +357,12 @@ final TextEditingController _feedbackController = TextEditingController();
     );
   }
 
+  Future<void> setInsertIdeaInfo(IdeaInfo ideaInfo) async {
+    //삽입 메서드
+    await dbHelper.initDatabase();
+    await dbHelper.insertIdeaInfo(ideaInfo);
+  }
+
   void initClickStatus() {
     //클릭 상태를 초기화 해주는 함수
     isClickPoint1 = false;
@@ -351,6 +370,5 @@ final TextEditingController _feedbackController = TextEditingController();
     isClickPoint3 = false;
     isClickPoint4 = false;
     isClickPoint5 = false;
-
   }
 }
