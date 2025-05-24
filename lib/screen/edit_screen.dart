@@ -297,9 +297,48 @@ final TextEditingController _feedbackController = TextEditingController();
                 controller: _feedbackController,
               ),
             ),
-            SizedBox(height: 16,),
-                ],
+            SizedBox(height: 16,
+            ),
+            //아이디어 작성완료 버튼
+            GestureDetector(
+              child: Container(
+              height: 65,
+              alignment: Alignment.center,
+              child: Text('아이디어 작성 완료'),
+              decoration: ShapeDecoration(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 1,
+                    color: Colors.black,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+              ),
+            ),
+              onTap: () {
+                //아이디어 작성(database insert 처리)
+                String titlevalue = _titleController.text.toString();
+                String motivevalue = _motiveController.text.toString();
+                String contentvalue = _contentController.text.toString();
+                String feedbackvalue = _feedbackController.text.toString();
+
+                //유효성 검사(비어있는 입력 값에 대한 체크)
+                if(titlevalue.isEmpty || motivevalue.isEmpty || contentvalue.isEmpty) {
+
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('비어있는 입력값이 존재합니다.'),
+                  duration: Duration(seconds: 2),
+                  ),
+                  );
+                  return;
+                }
+
+                //data save
+
+              },
+            ),
+           ],
+          ),
         ),
       ),
     );
